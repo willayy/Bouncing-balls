@@ -72,8 +72,11 @@ public final class Animator extends JPanel implements ActionListener {
 			double x = b.x - b.radius;
 			double y = b.y + b.radius;
 			// paint balls (y-coordinates are inverted)
-			Ellipse2D.Double e = new Ellipse2D.Double(x * pixelsPerMeter, this.getHeight() - (y * pixelsPerMeter),
-					b.radius * 2 * pixelsPerMeter, b.radius * 2 * pixelsPerMeter);
+			Ellipse2D.Double e = new Ellipse2D.Double(
+				x * pixelsPerMeter,
+				this.getHeight() - (y * pixelsPerMeter),
+				b.radius * 2 * pixelsPerMeter, b.radius * 2 * pixelsPerMeter
+			);
 			g2.fill(e);
 		}
 		Toolkit.getDefaultToolkit().sync();
