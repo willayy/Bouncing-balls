@@ -65,7 +65,7 @@ class Model {
 		/* If the ball isnt at the floor gravity should apply.
 		 Physically this isn't 100% correct since gravity still applies even when an object is on
 		 the floor, but for our model this makes things a lot simpler. */
-		if (!(b.y < b.radius || b.y > areaHeight - b.radius)) {
+		if (b.y > b.radius) {
 
 			b.vy -= deltaT * G;
 
