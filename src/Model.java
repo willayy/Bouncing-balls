@@ -32,12 +32,12 @@ class Model {
 	void step(double deltaT) {
 		
 		for (Ball b : balls) {
-			
-			// Morph y speed of ball by applying gravitational acceleration.
-			applyGravity(b, deltaT);
 
 			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
 			applyWallCollisons(b);
+
+			// Morph y speed of ball by applying gravitational acceleration.
+			applyGravity(b, deltaT);
 			
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
 			applyBallCollisions(b, deltaT);
