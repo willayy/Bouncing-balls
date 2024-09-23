@@ -37,7 +37,7 @@ class Model {
 			applyGravity(b, deltaT);
 
 			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
-			applyWallCollisons(b, deltaT);
+			applyWallCollisons(b);
 			
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
 			applyBallCollisions(b, deltaT);
@@ -74,7 +74,7 @@ class Model {
 	}
 
 	// Applies wall collisons, IFF the ball collides with the wall.
-	private void applyWallCollisons(Ball b, double deltaT) {
+	private void applyWallCollisons(Ball b) {
 
 		// detect collision with the border
 		if (b.x < b.radius || b.x > areaWidth - b.radius) {
