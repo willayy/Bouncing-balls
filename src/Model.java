@@ -1,5 +1,7 @@
 package src;
 
+import java.util.HashSet;
+
 /**
  * The physics model.
  * 
@@ -25,13 +27,16 @@ class Model {
 		
 		// Initialize the model with a few balls
 		balls = new Ball[2];
-		balls[0] = new Ball(width / 3, height * 0.9, 0, 0, 0.2);
-		balls[1] = new Ball(2 * width / 3, height * 0.7, 0, 0, 0.3);
+		balls[0] = new Ball(width / 3, height * 0.9, -1.5, 1, 0.2, 10);
+		balls[1] = new Ball(2 * width / 3, height * 0.7, 1.5, 0, 0.3, 100);
 	}
 
 	void step(double deltaT) {
 		
 		for (Ball b : balls) {
+
+			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
+			applyBallCollisions(b, deltaT);
 
 			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
 			applyWallCollisons(b);
@@ -39,20 +44,71 @@ class Model {
 			// Morph y speed of ball by applying gravitational acceleration.
 			applyGravity(b, deltaT);
 			
-			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
-			applyBallCollisions(b, deltaT);
-			
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
+
+			applyAntiClipping(b);
 
 		}
 
 	}
 
-	private void applyBallCollisions(Ball b, double deltaT) {
-		// TODO: Implement	
+	// Applies anti-clipping to the ball, IFF the ball is clipping another ball.
+	private void applyAntiClipping(Ball b) {
+		
 	}
 
+	// Applies the collision between two balls IFF they collide.
+	private void applyBallCollisions(Ball b, double deltaT) {
+		
+		for (Ball other : balls) {
+
+			// Skip the ball if it is the same as the ball we are currently checking.
+			if (other == b) {
+				continue;
+			}
+
+			double distance = euclideanDistance(b.x, b.y, other.x, other.y);
+
+			// If the balls are colliding
+			if (distance < b.radius + other.radius) {
+
+				// Declare som variables for prettier calculations.
+				double m1 = b.mass;
+				double m2 = other.mass;
+				double u1x = b.vx;
+				double u1y = b.vy;
+				double u2x = other.vx;
+				double u2y = other.vy;
+
+				//Total momentum before the collision.
+				double ix = m1 * u1x + m2 * u2x;
+				double iy = m1 * u1y + m2 * u2y;
+
+				//Relative velocity before the collision.
+				double rx = u2x - u1x;
+				double ry = u2y - u1y;
+				
+				// Since relative velocity is the same after the collision, we can calculate the new velocities.
+				double v1x = (ix + m2 * rx) / (m1 + m2);
+				double v1y = (iy + m2 * ry) / (m1 + m2);
+
+				double v2x = (ix - m1 * rx) / (m1 + m2);
+				double v2y = (iy - m1 * ry) / (m1 + m2);
+
+				// Update the balls velocities.
+				b.vx = v1x;
+				b.vy = v1y;
+				other.vx = v2x;
+				other.vy = v2y;
+
+			}
+
+		}
+
+	}
+
+	// Applies the eulers formula to the ball. Morphs the position of the ball according to its speed.
 	private void applyEulersFormula(Ball b, double deltaT) {
 		// compute new position according to the speed of the ball
 		b.x += deltaT * b.vx;
@@ -63,7 +119,7 @@ class Model {
 	private void applyGravity(Ball b, double deltaT) {
 
 		// If the ball isnt at the floor gravitational de-acceleration should apply.
-		if (b.y > b.radius) {
+		if (b.y >= b.radius) {
 
 			b.vy -= deltaT * G;
 
@@ -75,12 +131,12 @@ class Model {
 	private void applyWallCollisons(Ball b) {
 
 		// detect collision with the border
-		if (b.x < b.radius || b.x > areaWidth - b.radius) {
+		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
 
 			b.vx *= -1; // change direction of ball if the ball hits the left or right wall.
 		}
 		
-		if (b.y < b.radius || b.y > areaHeight - b.radius) {
+		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
 
 			b.vy *= -1; // change direction of ball if the ball hits the upper or lower wall.
 
@@ -88,35 +144,11 @@ class Model {
 		
 	}
 
-	// This method converts the rectangular coordinates to polar coordinates.
-	private Point rectToPolar(double x, double y) {
+	// This method calculates the euclidean distance between two points.
+	private double euclideanDistance(double x1, double y1, double x2, double y2) {
 
-		// Calculate the radius (cat) using the pythagorean theorem.
-		double r = Math.sqrt(x * x + y * y);
-		
-		/* Since y is the opposite side and x is the adjacent side of the triangle the relationship
-		 between them is the tangent of the angle theta. We use the atan2 function to get the angle
-		 theta in a range of -pi to pi. */
-		double theta = Math.atan2(y, x);
-
-		// Return the polar coordinates in a Point object.
-		return new Point(r, theta);
-			
-	}
-	
-	// This method converts the polar coordinates to rectangular coordinates.
-	private Point polarToRect(double r, double theta){
-
-		double x, y;
-
-		// Calculate the x coordinate using the cosine of the angle theta.
-		x = r * Math.cos(theta);
-
-		// Calculate the y coordinate using the sine of the angle theta.
-		y = r * Math.sin(theta);
-
-		// Return the rectangular coordinates in a Point object.
-		return new Point(x, y);
+		// Calculate the distance between two points using the pythagorean theorem.
+		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
 	
 }
