@@ -24,10 +24,15 @@ class Model {
 	Ball [] balls;
 
 	Model(Ball[] balls, double width, double height, boolean antiClipping) {
+
 		this.areaWidth = width;
+
 		this.areaHeight = height;
+
 		this.balls = balls;
+
 		this.antiClipping = antiClipping;
+		
 	}
 
 	void step(double deltaT) {

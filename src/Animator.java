@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -16,6 +15,18 @@ import javax.swing.Timer;
  */
 @SuppressWarnings("serial")
 public final class Animator extends JPanel implements ActionListener {
+
+	// Drawing scale
+	private static final double pixelsPerMeter = 200;
+
+	//Physical model
+	private Model model;
+
+	//Timer that triggers redrawing
+	private Timer timer;
+
+	//Time interval between redrawing, also used as time step for the model
+	private double deltaT;
 
 	public Animator(int pixelWidth, int pixelHeight, int fps) {
 
@@ -38,26 +49,6 @@ public final class Animator extends JPanel implements ActionListener {
 		this.setPreferredSize(new Dimension(pixelWidth, pixelHeight));
 
 	}
-
-	/**
-	 * Drawing scale
-	 */
-	private static final double pixelsPerMeter = 200;
-
-	/**
-	 * Physical model
-	 */
-	private Model model;
-
-	/**
-	 * Timer that triggers redrawing
-	 */
-	private Timer timer;
-
-	/**
-	 * Time interval between redrawing, also used as time step for the model
-	 */
-	private double deltaT;
 
 	public void start() {
 		timer.start();
@@ -109,34 +100,7 @@ public final class Animator extends JPanel implements ActionListener {
     	model.step(deltaT);
 
     	this.repaint();
-		
+
     }
 
-	public static void main(String[] args) {
-
-        // Schedule a job for the event-dispatching thread:
-        // creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-
-                Animator anim = new Animator(800, 600, 60);
-
-                JFrame frame = new JFrame("Bouncing balls");
-
-            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            	frame.add(anim);
-
-            	frame.pack();
-
-            	frame.setLocationRelativeTo(null);
-
-            	frame.setVisible(true);
-
-            	anim.start();
-            }
-
-        });
-    }
 }
