@@ -51,11 +51,15 @@ public final class Animator extends JPanel implements ActionListener {
 	}
 
 	public void start() {
+
 		timer.start();
+
 	}
 
 	public void stop() {
+
     	timer.stop();
+		
     }
 
 	@Override

@@ -32,7 +32,7 @@ class Model {
 		this.balls = balls;
 
 		this.antiClipping = antiClipping;
-		
+
 	}
 
 	void step(double deltaT) {
@@ -73,8 +73,9 @@ class Model {
 		// If the ball is clipping the left or right wall.
 		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
 
-			// Move the ball so that it is only touching the wall.
+			// Move the ball so that it is only touching the wall not clipping it.
 			b.x = Math.max(b.x, b.radius);
+
 			b.x = Math.min(b.x, areaWidth - b.radius);
 
 		}
@@ -82,8 +83,9 @@ class Model {
 		// If the ball is clipping the upper or lower wall.
 		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
 
-			// Move the ball so that it is only touching the wall.
+			// Move the ball so that it is only touching the wall not clipping it.
 			b.y = Math.max(b.y, b.radius);
+
 			b.y = Math.min(b.y, areaHeight - b.radius);
 
 		}
@@ -156,7 +158,7 @@ class Model {
 				double rx = u2x - u1x;
 				double ry = u2y - u1y;
 				
-				// Since relative velocity is the same after the collision, we can calculate the new velocities.
+				// Since relative velocity and momention is the same after the collision (because its fully elastic), we can calculate the new velocities.
 				double v1x = (ix + m2 * rx) / (m1 + m2);
 				double v1y = (iy + m2 * ry) / (m1 + m2);
 
