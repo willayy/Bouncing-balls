@@ -7,21 +7,23 @@ package src;
  * This Point class accepts double values which is why we cant use the awt.Point class.
  * 
  */
-public class Point {
+class Point {
     
-    public double x;
-    public double y;
+    protected double x;
+
+    protected double y;
     
-    public Point(double x, double y) {
+    protected Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
     
-    public Point(Point p) {
+    protected Point(Point p) {
         this.x = p.x;
         this.y = p.y;
     }
     
+    @Override
     public String toString() {
         return "(" + x + ", " + y + ")";
     }

@@ -1,7 +1,5 @@
 package src;
 
-import java.util.HashSet;
-
 /**
  * The physics model.
  * 
@@ -12,18 +10,18 @@ import java.util.HashSet;
  * @author Simon Robillard
  *
  */
-class Model {
+public class Model {
 
 	// The gravitational acceleration consants on earth (specifically Sweden).
 	private static final double G = 9.82;
 
-	double areaWidth, areaHeight;
+	private double areaWidth, areaHeight;
 	
-	Boolean antiClipping;
+	private Boolean antiClipping, gravity, singleBall;
 
-	Ball [] balls;
+	public Ball [] balls;
 
-	Model(Ball[] balls, double width, double height, boolean antiClipping) {
+	public Model(Ball[] balls, double width, double height, boolean antiClipping, boolean gravity) {
 
 		this.areaWidth = width;
 
@@ -33,20 +31,28 @@ class Model {
 
 		this.antiClipping = antiClipping;
 
+		this.gravity = gravity;
+
+		this.singleBall = balls.length == 1;
+
 	}
 
-	void step(double deltaT) {
+	public void step(double deltaT) {
 		
 		for (Ball b : balls) {
 
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
 			applyBallCollisions(b, deltaT);
-
+			
 			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
 			applyWallCollisons(b);
+			
+			if (gravity) {
 
-			// Morph y speed of ball by applying gravitational acceleration.
-			applyGravity(b, deltaT);
+				// Morph y speed of ball by applying gravitational acceleration.
+				applyGravity(b, deltaT);
+
+			}
 			
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
