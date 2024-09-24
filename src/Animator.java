@@ -18,15 +18,25 @@ import javax.swing.Timer;
 public final class Animator extends JPanel implements ActionListener {
 
 	public Animator(int pixelWidth, int pixelHeight, int fps) {
+
 		super(true);
+
 		this.timer = new Timer(1000 / fps, this);
+
 		this.deltaT = 1.0 / fps;
+
 		Ball[] balls = new Ball[2];
+
 		balls[0] = new Ball(1, 7, -1.5, 1, 0.2, 10);
+
 		balls[1] = new Ball(4, 7, 1.5, 0, 0.3, 20);
+
 		this.model = new Model(balls, pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter, true);
+
 		this.setOpaque(false);
+
 		this.setPreferredSize(new Dimension(pixelWidth, pixelHeight));
+
 	}
 
 	/**
@@ -59,46 +69,74 @@ public final class Animator extends JPanel implements ActionListener {
 
 	@Override
 	protected void paintComponent(Graphics g) {
+
 		Graphics2D g2 = (Graphics2D) g;
+
 		// clear the canvas
 		g2.setColor(Color.WHITE);
+
 		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+
 		// draw balls
 		g2.setColor(Color.RED);
+
 		for (Ball b : model.balls) {
+
 			double x = b.x - b.radius;
+
 			double y = b.y + b.radius;
+
 			// paint balls (y-coordinates are inverted)
 			Ellipse2D.Double e = new Ellipse2D.Double(
+
 				x * pixelsPerMeter,
+
 				this.getHeight() - (y * pixelsPerMeter),
+
 				b.radius * 2 * pixelsPerMeter, b.radius * 2 * pixelsPerMeter
+
 			);
+
 			g2.fill(e);
 		}
+
 		Toolkit.getDefaultToolkit().sync();
 	}
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
     	model.step(deltaT);
+
     	this.repaint();
+		
     }
 
 	public static void main(String[] args) {
+
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
+
             public void run() {
+
                 Animator anim = new Animator(800, 600, 60);
+
                 JFrame frame = new JFrame("Bouncing balls");
+
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             	frame.add(anim);
+
             	frame.pack();
+
             	frame.setLocationRelativeTo(null);
+
             	frame.setVisible(true);
+
             	anim.start();
             }
+
         });
     }
 }
