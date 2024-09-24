@@ -19,16 +19,15 @@ class Model {
 
 	double areaWidth, areaHeight;
 	
+	Boolean antiClipping;
+
 	Ball [] balls;
 
-	Model(double width, double height) {
-		areaWidth = width;
-		areaHeight = height;
-		
-		// Initialize the model with a few balls
-		balls = new Ball[2];
-		balls[0] = new Ball(width / 3, height * 0.9, -1.5, 1, 0.2, 10);
-		balls[1] = new Ball(2 * width / 3, height * 0.7, 1.5, 0, 0.3, 100);
+	Model(Ball[] balls, double width, double height, boolean antiClipping) {
+		this.areaWidth = width;
+		this.areaHeight = height;
+		this.balls = balls;
+		this.antiClipping = antiClipping;
 	}
 
 	void step(double deltaT) {
@@ -46,17 +45,79 @@ class Model {
 			
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
+			
+			// Since the model works without anti-clipping, we can skip this if the user doesnt want it.
+			// Its worth noting that the anti-clipping causes significantly more calculations to be made, which might slow down the simulation.
+			if (antiClipping) {
+				
+				// (Maybe) Morph the balls position if the ball is clipping another ball.
+				applyAntiBallClipping(b);
 
-			// (Maybe) Morph the balls position if the ball is clipping another ball.
-			applyAntiClipping(b);
+				// (Maybe) Morph the balls position if the ball is clipping a wall.
+				applyAntiWallClipping(b);
+
+			}
+
+		}
+
+	}
+
+	// Applies anti-clipping to the ball, IFF the ball is clipping a wall.
+	private void applyAntiWallClipping(Ball b) {
+
+		// If the ball is clipping the left or right wall.
+		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
+
+			// Move the ball so that it is only touching the wall.
+			b.x = Math.max(b.x, b.radius);
+			b.x = Math.min(b.x, areaWidth - b.radius);
+
+		}
+
+		// If the ball is clipping the upper or lower wall.
+		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
+
+			// Move the ball so that it is only touching the wall.
+			b.y = Math.max(b.y, b.radius);
+			b.y = Math.min(b.y, areaHeight - b.radius);
 
 		}
 
 	}
 
 	// Applies anti-clipping to the ball, IFF the ball is clipping another ball.
-	private void applyAntiClipping(Ball b) {
+	private void applyAntiBallClipping(Ball b) {
 		
+		for (Ball other: balls) {
+
+			if (other == b) {
+				continue;
+			}
+
+			double distance = euclideanDistance(b.x, b.y, other.x, other.y);
+
+			double amountClipped = b.radius + other.radius - distance;
+
+			// If the balls are clipping
+			if (amountClipped > 0) {
+				
+				// Calculate the angle between the two balls by using the arctan function.
+				double angle = Math.atan2(other.y - b.y, other.x - b.x);
+
+				// Calculate the amount of x and y to move the to make them touch.
+				double dx = Math.cos(angle) * amountClipped / 2;
+				double dy = Math.sin(angle) * amountClipped / 2;
+				
+				// Move the balls so that they are only touching.
+				b.x -= dx;
+				b.y -= dy;
+				other.x += dx;
+				other.y += dy;
+
+			}
+
+		}
+
 	}
 
 	// Applies the collision between two balls IFF they collide.

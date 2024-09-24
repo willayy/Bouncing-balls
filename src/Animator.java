@@ -1,10 +1,6 @@
 package src;
 
 import java.awt.*;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
@@ -25,7 +21,10 @@ public final class Animator extends JPanel implements ActionListener {
 		super(true);
 		this.timer = new Timer(1000 / fps, this);
 		this.deltaT = 1.0 / fps;
-		this.model = new Model(pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter);
+		Ball[] balls = new Ball[2];
+		balls[0] = new Ball(1, 7, -1.5, 1, 0.2, 10);
+		balls[1] = new Ball(4, 7, 1.5, 0, 0.3, 20);
+		this.model = new Model(balls, pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter, true);
 		this.setOpaque(false);
 		this.setPreferredSize(new Dimension(pixelWidth, pixelHeight));
 	}
