@@ -47,6 +47,7 @@ class Model {
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
 
+			// (Maybe) Morph the balls position if the ball is clipping another ball.
 			applyAntiClipping(b);
 
 		}
