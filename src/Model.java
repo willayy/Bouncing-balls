@@ -41,19 +41,6 @@ public class Model {
 		
 		for (Ball b : balls) {
 
-			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
-			applyBallCollisions(b, deltaT);
-			
-			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
-			applyWallCollisons(b);
-			
-			if (gravity) {
-
-				// Morph y speed of ball by applying gravitational acceleration.
-				applyGravity(b, deltaT);
-
-			}
-			
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
 			
@@ -66,6 +53,19 @@ public class Model {
 
 				// (Maybe) Morph the balls position if the ball is clipping a wall.
 				applyAntiWallClipping(b);
+
+			}
+
+			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
+			applyBallCollisions(b);
+			
+			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
+			applyWallCollisons(b);
+			
+			if (gravity) {
+
+				// Morph y speed of ball by applying gravitational acceleration.
+				applyGravity(b, deltaT);
 
 			}
 
@@ -134,7 +134,7 @@ public class Model {
 	}
 
 	// Applies the collision between two balls IFF they collide.
-	private void applyBallCollisions(Ball b, double deltaT) {
+	private void applyBallCollisions(Ball b) {
 		
 		for (Ball other : balls) {
 
@@ -187,8 +187,6 @@ public class Model {
 				b.vy = v1y * Math.cos(-angle) + v1x * Math.sin(-angle);
 				other.vx = v2x * Math.cos(-angle) - v2y * Math.sin(-angle);
 				other.vy = v2y * Math.cos(-angle) + v2x * Math.sin(-angle);
-
-				applyEulersFormula(other, deltaT);
 
 			}
 
