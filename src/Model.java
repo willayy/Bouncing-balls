@@ -151,46 +151,73 @@ public class Model {
 				// Calculate the angle between the two balls.
 				double angle = angleBetween(b, other);
 
-				// Our initial variables.
+				// The mass of the balls.
 				double m1 = b.mass;
 				double m2 = other.mass;
 
-				/* Our initial velocities. But rotated to be parallel (x) and orthogonal (y) to the
+				// Our initial velocities in vector format.
+				Vector2d v1 = new Vector2d(b.vx, b.vy);
+				Vector2d v2 = new Vector2d(other.vx, other.vy);
+				
+				/* Rotate the vectors so they are parallel (x) and orthogonal (y) to the
 				axle of collision. This is equivalent to making the vectors (vx1, vy1) and (vx2, vy2)
 				out of the balls x and y velocities and rotating them clockwise using the rotation matrix. */
-				double u1x = b.vx * Math.cos(angle) - b.vy * Math.sin(angle);
-				double u1y = b.vy * Math.cos(angle) + b.vx * Math.sin(angle);
-				double u2x = other.vx * Math.cos(angle) - other.vy * Math.sin(angle);
-				double u2y = other.vy * Math.cos(angle) + other.vx * Math.sin(angle);
-
-				/*Total momentum before the collision. These could just be baked in to the calculation below,
-				but this improves readability. */
-				double ix = m1 * u1x + m2 * u2x;
-				double iy = m1 * u1y + m2 * u2y;
-
-				/* Relative velocity before the collision. These could just be baked in to the calculation below,
-				but this improves readability. */
-				double rx = u2x - u1x;
-				double ry = u2y - u1y;
+				rotateVector(v1, angle);
+				rotateVector(v2, angle);
 				
-				/* Since relative velocity and total momentum is the same after the collision (because its fully elastic),
-				we can calculate the new velocities by using this formula we aquired from the system of equations
-				given by R and I */
-				double v1x = (ix + m2 * rx) / (m1 + m2);
-				double v1y = (iy + m2 * ry) / (m1 + m2);
+				// Calculate the new velocities of the balls after the collision.
+				computeVelocityTransfer(v1, v2, m1, m2);
 
-				double v2x = (ix - m1 * rx) / (m1 + m2);
-				double v2y = (iy - m1 * ry) / (m1 + m2);
+				// Rotate the vectors back to the original positions.
+				rotateVector(v1, -angle);
+				rotateVector(v2, -angle);
 				
-				// Rotate the velocities back to the original position before assigning them to the balls.
-				b.vx = v1x * Math.cos(-angle) - v1y * Math.sin(-angle);
-				b.vy = v1y * Math.cos(-angle) + v1x * Math.sin(-angle);
-				other.vx = v2x * Math.cos(-angle) - v2y * Math.sin(-angle);
-				other.vy = v2y * Math.cos(-angle) + v2x * Math.sin(-angle);
+				// Assign new velocities to the balls.
+				b.vx = v1.x;
+				b.vy = v1.y;
+				other.vx = v2.x;
+				other.vy = v2.y;
 
 			}
 
 		}
+
+	}
+
+	// Computes the velocity transfer between two balls after a collision with velocity v1 and v2 (vectors) and mass m1 and m2.
+	private void computeVelocityTransfer(Vector2d v1, Vector2d v2, double m1, double m2) {
+
+		/*Total momentum before the collision. These could just be baked in to the calculation below,
+		but this improves readability. */
+		double ix = m1 * v1.x + m2 * v2.x;
+		double iy = m1 * v1.y + m2 * v2.y;
+
+		/* Relative velocity before the collision. These could just be baked in to the calculation below,
+		but this improves readability. */
+		double rx = v2.x - v1.x;
+		double ry = v2.y - v1.y;
+		
+		/* Since relative velocity and total momentum is the same after the collision (because its fully elastic),
+		we can calculate the new velocities by using this formula we aquired from the system of equations
+		given by R and I */
+		v1.x = (ix + m2 * rx) / (m1 + m2);
+		v1.y = (iy + m2 * ry) / (m1 + m2);
+
+		v2.x = (ix - m1 * rx) / (m1 + m2);
+		v2.y = (iy - m1 * ry) / (m1 + m2);
+
+	}
+
+	// Rotates a vector by a given angle in radians. This is equivalent to multiplying the vector with a rotation matrix.
+	private void rotateVector(Vector2d v, double angle) {
+
+		double x = v.x;
+
+		double y = v.y;
+
+		v.x = x * Math.cos(angle) - y * Math.sin(angle);
+
+		v.y = x * Math.sin(angle) + y * Math.cos(angle);
 
 	}
 	
