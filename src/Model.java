@@ -17,7 +17,7 @@ public class Model {
 
 	private double areaWidth, areaHeight;
 	
-	private Boolean antiClipping, gravity, singleBall;
+	private Boolean antiClipping, gravity;
 
 	public Ball [] balls;
 
