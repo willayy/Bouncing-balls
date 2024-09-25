@@ -33,8 +33,6 @@ public class Model {
 
 		this.gravity = gravity;
 
-		this.singleBall = balls.length == 1;
-
 	}
 
 	public void step(double deltaT) {
