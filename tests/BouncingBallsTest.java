@@ -19,7 +19,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, 0, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, false, false);
+        Model model = new Model(balls, 10, 10, true, false);
 
         /* The balls should collide and the first one should stop,
          the second one should continue moving with the same speed as the first one.
@@ -49,7 +49,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, -1, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, false, false);
+        Model model = new Model(balls, 10, 10, true, false);
 
         /* The balls should collide and both should have their speed inverted.
         Gravity is disabled, so the balls should not travel in the y-axis at all. */
@@ -78,7 +78,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, 0, 0, 1, 1000);
 
-        Model model = new Model(balls, 10, 10, false, false);
+        Model model = new Model(balls, 10, 10, true, false);
 
         // The balls should collide and the first one should stop, the second one should continue moving with the same speed as the first one.
         // Gravity is disabled, so the balls should not travel in the y-axis at all. 
@@ -89,14 +89,42 @@ public class BouncingBallsTest {
         the mass of the bigger ball approaches infinity the transfer will get closer
         and closer to 1,0 -> -1,0. But at the ratio of 1 : 1000 the smaller ball
         actuallyu gives the big ball a tiny amount of speed. */
-        assertEquals(-1, balls[0].vx, 0.1);
+        assertEquals(-1, balls[0].vx, 0.01);
 
-        assertEquals(0, balls[1].vx, 0.1);
+        assertEquals(0, balls[1].vx, 0.01);
         
         // Assert that the balls have not moved in the y-axis, this collision should only affect the x-axis.
         assertEquals(0, balls[0].vy, 0);
 
         assertEquals(0, balls[1].vy, 0);
+
+    }
+
+    @Test
+    // Test the diagonal collision of a ball moiing at 45 degrees towards a stationary ball.
+    public void testDiagonalCollision() {
+        
+        Ball[] balls = new Ball[2];
+
+        // Two balls of equal mass and radius, moving towards each other at the same speed.
+        balls[0] = new Ball(4, 4, 1, 1, 1, 1);
+
+        balls[1] = new Ball(6, 6, 0, 0, 1, 1);
+
+        Model model = new Model(balls, 10, 10, true, false);
+
+        // The balls should collide and the first one should stop, the second one should continue moving with the same speed as the first one.
+        model.step(1);
+
+        // Assert that the transfer of speed has happened.
+        assertEquals(0, balls[0].vx, 0);
+
+        assertEquals(1, balls[1].vx, 0.01);
+        
+        // Assert that the balls have not moved in the y-axis, this collision should only affect the x-axis.
+        assertEquals(0, balls[0].vy, 0);
+
+        assertEquals(1, balls[1].vy, 0.01);
 
     }
 

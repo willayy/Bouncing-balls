@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 /**
  * The physics model.
  * 
@@ -113,7 +115,7 @@ public class Model {
 			if (amountClipped > 0) {
 				
 				// Calculate the angle between the two balls by using the arctan function.
-				double angle = Math.atan2(other.y - b.y, other.x - b.x);
+				double angle = angleBetween(b, other);
 
 				// Calculate the amount of x and y to move the to make them touch.
 				double dx = Math.cos(angle) * amountClipped / 2;
@@ -144,40 +146,60 @@ public class Model {
 			double distance = euclideanDistance(b.x, b.y, other.x, other.y);
 
 			// If the balls are colliding
-			if (distance < b.radius + other.radius) {
+			if (distance <= b.radius + other.radius + 0.0001) {
 
-				// Declare som variables for prettier calculations.
+				// Calculate the angle between the two balls.
+				double angle = angleBetween(b, other);
+
+				// Our initial variables.
 				double m1 = b.mass;
 				double m2 = other.mass;
-				double u1x = b.vx;
-				double u1y = b.vy;
-				double u2x = other.vx;
-				double u2y = other.vy;
 
-				//Total momentum before the collision.
+				/* Our initial velocities. But rotated to be parallel (x) and orthogonal (y) to the
+				axle of collision. This is equivalent to making the vectors (vx1, vy1) and (vx2, vy2)
+				out of the balls x and y velocities and rotating them clockwise using the rotation matrix. */
+				double u1x = b.vx * Math.cos(angle) - b.vy * Math.sin(angle);
+				double u1y = b.vy * Math.cos(angle) + b.vx * Math.sin(angle);
+				double u2x = other.vx * Math.cos(angle) - other.vy * Math.sin(angle);
+				double u2y = other.vy * Math.cos(angle) + other.vx * Math.sin(angle);
+
+				/*Total momentum before the collision. These could just be baked in to the calculation below,
+				but this improves readability. */
 				double ix = m1 * u1x + m2 * u2x;
 				double iy = m1 * u1y + m2 * u2y;
 
-				//Relative velocity before the collision.
+				/* Relative velocity before the collision. These could just be baked in to the calculation below,
+				but this improves readability. */
 				double rx = u2x - u1x;
 				double ry = u2y - u1y;
 				
-				// Since relative velocity and momention is the same after the collision (because its fully elastic), we can calculate the new velocities.
+				/* Since relative velocity and total momentum is the same after the collision (because its fully elastic),
+				we can calculate the new velocities by using this formula we aquired from the system of equations
+				given by R and I */
 				double v1x = (ix + m2 * rx) / (m1 + m2);
 				double v1y = (iy + m2 * ry) / (m1 + m2);
 
 				double v2x = (ix - m1 * rx) / (m1 + m2);
 				double v2y = (iy - m1 * ry) / (m1 + m2);
+				
+				// Rotate the velocities back to the original position before assigning them to the balls.
+				b.vx = v1x * Math.cos(-angle) - v1y * Math.sin(-angle);
+				b.vy = v1y * Math.cos(-angle) + v1x * Math.sin(-angle);
+				other.vx = v2x * Math.cos(-angle) - v2y * Math.sin(-angle);
+				other.vy = v2y * Math.cos(-angle) + v2x * Math.sin(-angle);
 
-				// Update the balls velocities.
-				b.vx = v1x;
-				b.vy = v1y;
-				other.vx = v2x;
-				other.vy = v2y;
+				applyEulersFormula(other, deltaT);
 
 			}
 
 		}
+
+	}
+	
+	// Calculates the angle between two balls. The angle is a radian between -pi and pi
+	private double angleBetween(Ball b, Ball other) {
+
+		return Math.atan2(other.y-b.y,other.x-b.x);
 
 	}
 
@@ -217,11 +239,15 @@ public class Model {
 		
 	}
 
-	// This method calculates the euclidean distance between two points.
+	// This method calculates the euclidean distance between two Vector2ds.
 	private double euclideanDistance(double x1, double y1, double x2, double y2) {
 
-		// Calculate the distance between two points using the pythagorean theorem.
-		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+		double dx = x1 - x2;
+
+		double dy = y1 - y2;
+
+		// Calculate the distance between two Vector2ds using the pythagorean theorem.
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 	}
 	
 }
