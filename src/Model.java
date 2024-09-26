@@ -1,7 +1,5 @@
 package src;
 
-import java.util.ArrayList;
-
 /**
  * The physics model.
  * 

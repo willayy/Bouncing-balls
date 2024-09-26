@@ -139,7 +139,7 @@ public class BouncingBallsTest {
 
         Model model = new Model(balls, 10, 10, true, true);
 
-        ArrayList<Double> yValues = new ArrayList<Double>();
+        ArrayList<Double> yValues = new ArrayList<>();
 
         final double iterations = 100;
 
