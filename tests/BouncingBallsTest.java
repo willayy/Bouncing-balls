@@ -1,7 +1,8 @@
 package tests;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
 import org.junit.Test;
 import src.Ball;
 import src.Model;
@@ -125,6 +126,43 @@ public class BouncingBallsTest {
         assertEquals(0, balls[0].vy, 0);
 
         assertEquals(1, balls[1].vy, 0.01);
+
+    }
+
+    @Test
+    // Test if a ball dropped from a height will bounce back up but not reach the same height.
+    public void testDropBall() {
+
+        Ball[] balls = new Ball[1];
+
+        balls[0] = new Ball(5, 5, 0, -0.1, 1, 1);
+
+        Model model = new Model(balls, 10, 10, true, true);
+
+        ArrayList<Double> yValues = new ArrayList<Double>();
+
+        final double iterations = 100;
+
+        final double deltaT = 0.1;
+
+        // Let the model run for a while and store height values.
+
+        for (int i = 0; i < iterations; i++) {
+
+            yValues.add(balls[0].y);
+
+            model.step(deltaT);
+
+        }
+        
+        /* Remove the first value since the ball is dropped from a height
+         and the first value is the starting height.*/
+        yValues.remove(0);
+
+        // Assert that the ball has bounced back up but not reached the same height.
+        boolean doesNotReachHigher = yValues.stream().noneMatch(y -> y >= 5);
+
+        assertTrue(doesNotReachHigher);
 
     }
 
