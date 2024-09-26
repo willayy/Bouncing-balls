@@ -166,4 +166,36 @@ public class BouncingBallsTest {
 
     }
 
+    @Test
+    // Test if kinetic energy is conserved in a collision between two balls.
+    public void testKineticEnergyConservation() {
+
+        Ball[] balls = new Ball[2];
+
+        // Two balls of equal mass and radius, moving towards each other at the same speed.
+        balls[0] = new Ball(4, 5, 1, 0, 1, 1);
+
+        balls[1] = new Ball(6, 5, 0, 0, 1, 1);
+
+        Model model = new Model(balls, 10, 10, true, false);
+        
+        // Get the mass and speed variables of the balls.
+        double m1 = balls[0].mass;
+        double m2 = balls[1].mass;
+        double v1x = balls[0].vx;
+        double v2x = balls[1].vx;
+
+        // Calculate the kinetic energy of the system before and after the collision.
+        double kineticEnergyBefore = 0.5 * m1 * Math.pow(v1x, 2) + 0.5 * m2 * Math.pow(v2x, 2);
+
+        // The collision happening when model is stepped.
+        model.step(1);
+
+        double kineticEnergyAfter = 0.5 * m1 * Math.pow(v1x, 2) + 0.5 * m2 * Math.pow(v2x, 2);
+
+        // Assert that the kinetic energy is conserved.
+        assertEquals(kineticEnergyBefore, kineticEnergyAfter, 0.01);
+
+    }
+
 }
