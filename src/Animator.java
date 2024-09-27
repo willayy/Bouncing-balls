@@ -36,13 +36,13 @@ public final class Animator extends JPanel implements ActionListener {
 
 		this.deltaT = 1.0 / fps;
 
-		Ball[] balls = new Ball[1];
+		Ball[] balls = new Ball[3];
 
 		balls[0] = new Ball(1, 1, 0, 0, 0.2, 1);
 
-		//balls[1] = new Ball(2, 2, 0, 0, 0.2, 1);
+		balls[1] = new Ball(2, 2, 0, 0, 0.2, 1);
 
-		//balls[2] = new Ball(3, 3, -1, 0.5, 0.2, 1);
+		balls[2] = new Ball(3, 3, -1, 0.5, 0.2, 1);
 
 		this.model = new Model(balls, pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter, false, true, true);
 
