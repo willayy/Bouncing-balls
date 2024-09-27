@@ -59,15 +59,15 @@ public class Model {
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
 			applyBallCollisions(b);
 			
-			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
-			applyWallCollisons(b);
-			
 			if (gravity) {
 
 				// Morph y speed of ball by applying gravitational acceleration.
 				applyGravity(b, deltaT);
 
 			}
+
+			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
+			applyWallCollisons(b);
 
 			if (debugInfo) {
 				
@@ -260,7 +260,7 @@ public class Model {
 	private void applyGravity(Ball b, double deltaT) {
 
 		// If the ball isnt at the floor gravitational de-acceleration should apply.
-		if (b.y >= b.radius) {
+		if (b.y > b.radius) {
 
 			b.vy -= deltaT * G;
 

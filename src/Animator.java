@@ -44,7 +44,7 @@ public final class Animator extends JPanel implements ActionListener {
 
 		//balls[2] = new Ball(3, 3, -1, 0.5, 0.2, 1);
 
-		this.model = new Model(balls, pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter, true, true, true);
+		this.model = new Model(balls, pixelWidth / pixelsPerMeter, pixelHeight / pixelsPerMeter, false, true, true);
 
 		this.setOpaque(false);
 
