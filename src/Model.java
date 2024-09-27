@@ -17,11 +17,11 @@ public class Model {
 
 	private double areaWidth, areaHeight;
 	
-	private Boolean antiClipping, gravity, debugInfo;
+	private Boolean ballClipping, gravity, debugInfo;
 
 	public Ball [] balls;
 
-	public Model(Ball[] balls, double width, double height, boolean antiClipping, boolean gravity, boolean debugInfo) {
+	public Model(Ball[] balls, double width, double height, boolean ballClipping, boolean gravity, boolean debugInfo) {
 
 		this.areaWidth = width;
 
@@ -29,7 +29,7 @@ public class Model {
 
 		this.balls = balls;
 
-		this.antiClipping = antiClipping;
+		this.ballClipping = ballClipping;
 
 		this.gravity = gravity;
 
@@ -41,37 +41,36 @@ public class Model {
 		
 		for (Ball b : balls) {
 
+			if (debugInfo) {
+				
+				printDebugInfo(b);
+
+			}
+
+			// Save the old position of the ball. To fix clipping issues.
+			double oldX = b.x;
+			double oldY = b.y;
+
 			// Update position by using eulers formula.
 			applyEulersFormula(b, deltaT);
-			
-			// Since the model works without anti-clipping, we can skip this if the user doesnt want it.
-			// Its worth noting that the anti-clipping causes significantly more calculations to be made, which might slow down the simulation.
-			if (antiClipping) {
+
+			if (!ballClipping) {
 				
 				// (Maybe) Morph the balls position if the ball is clipping another ball.
 				applyAntiBallClipping(b);
-
-				// (Maybe) Morph the balls position if the ball is clipping a wall.
-				applyAntiWallClipping(b);
 
 			}
 
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
 			applyBallCollisions(b);
 			
+			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
+			applyWallCollisons(oldX, oldY, b);
+
 			if (gravity) {
 
 				// Morph y speed of ball by applying gravitational acceleration.
 				applyGravity(b, deltaT);
-
-			}
-
-			// (Maybe) Morph y,x speed if the balls hits a wall during this step.
-			applyWallCollisons(b);
-
-			if (debugInfo) {
-				
-				printDebugInfo(b);
 
 			}
 
@@ -91,31 +90,6 @@ public class Model {
 		String y = String.format("%.4f", b.y);
 
 		System.out.printf("Ball %d: x=%s, y=%s, vx=%s, vy=%s %n", b.id, x, y, vx, vy);
-
-	}
-
-	// Applies anti-clipping to the ball, IFF the ball is clipping a wall.
-	private void applyAntiWallClipping(Ball b) {
-
-		// If the ball is clipping the left or right wall.
-		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
-
-			// Move the ball so that it is only touching the wall not clipping it.
-			b.x = Math.max(b.x, b.radius);
-
-			b.x = Math.min(b.x, areaWidth - b.radius);
-
-		}
-
-		// If the ball is clipping the upper or lower wall.
-		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
-
-			// Move the ball so that it is only touching the wall not clipping it.
-			b.y = Math.max(b.y, b.radius);
-
-			b.y = Math.min(b.y, areaHeight - b.radius);
-
-		}
 
 	}
 
@@ -167,7 +141,7 @@ public class Model {
 			double distance = euclideanDistance(b.x, b.y, other.x, other.y);
 
 			// If the balls are colliding
-			if (distance <= b.radius + other.radius + 0.0001) {
+			if (distance <= b.radius + other.radius + 0.001) {
 
 				// Calculate the angle between the two balls.
 				double angle = angleBetween(b, other);
@@ -251,9 +225,11 @@ public class Model {
 
 	// Applies the eulers formula to the ball. Morphs the position of the ball according to its speed.
 	private void applyEulersFormula(Ball b, double deltaT) {
+
 		// compute new position according to the speed of the ball
 		b.x += deltaT * b.vx;
 		b.y += deltaT * b.vy;
+
 	}
 
 	// Applies gravity to the vertical accelration of the ball
@@ -264,20 +240,24 @@ public class Model {
 
 			b.vy -= deltaT * G;
 
-		} 
+		}
 
 	}
 
 	// Applies wall collisons, IFF the ball collides with the wall.
-	private void applyWallCollisons(Ball b) {
+	private void applyWallCollisons(double oldX, double oldY, Ball b) {
 
 		// detect collision with the border
 		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
+
+			b.x = oldX;
 
 			b.vx *= -1; // change direction of ball if the ball hits the left or right wall.
 		}
 		
 		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
+
+			b.y = oldY;
 
 			b.vy *= -1; // change direction of ball if the ball hits the upper or lower wall.
 
