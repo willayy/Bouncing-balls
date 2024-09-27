@@ -58,7 +58,7 @@ public class Model {
 				
 				// (Maybe) Morph the balls position if the ball is clipping another ball.
 				applyAntiBallClipping(b);
-
+				
 			}
 
 			// (Maybe) Morph y,x speed if the balls hits eachOther during this step.
@@ -210,9 +210,9 @@ public class Model {
 
 		double y = v.y;
 
-		v.x = x * Math.cos(angle) - y * Math.sin(angle);
+		v.x = x * Math.cos(angle) + y * Math.sin(angle);
 
-		v.y = x * Math.sin(angle) + y * Math.cos(angle);
+		v.y = - x * Math.sin(angle) + y * Math.cos(angle);
 
 	}
 	
@@ -250,14 +250,14 @@ public class Model {
 		// detect collision with the border
 		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
 
-			b.x = oldX;
+			b.x = oldX; // If the ball is outside the area, move it back to the old position.
 
 			b.vx *= -1; // change direction of ball if the ball hits the left or right wall.
 		}
 		
 		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
 
-			b.y = oldY;
+			b.y = oldY; // If the ball is outside the area, move it back to the old position.
 
 			b.vy *= -1; // change direction of ball if the ball hits the upper or lower wall.
 
