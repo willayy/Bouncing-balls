@@ -82,7 +82,15 @@ public class Model {
 	// Prints debug information about the ball.
 	private void printDebugInfo(Ball b) {
 
-		System.out.println("Ball: " + b.id + " x: " + b.x + " y: " + b.y + " vx: " + b.vx + " vy: " + b.vy);
+		String vx = String.format("%.4f", b.vx);
+
+		String vy = String.format("%.4f", b.vy);
+
+		String x = String.format("%.4f", b.x);
+
+		String y = String.format("%.4f", b.y);
+
+		System.out.printf("Ball %d: x=%s, y=%s, vx=%s, vy=%s %n", b.id, x, y, vx, vy);
 
 	}
 
