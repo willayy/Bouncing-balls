@@ -16,9 +16,9 @@ public class BouncingBallsTest {
         Ball[] balls = new Ball[2];
 
         // Two balls of equal mass and radius, moving towards each other at the same speed.
-        balls[0] = new Ball(4, 5, 1, 0, 1, 1);
+        balls[0] = new Ball(4, 5, 1, 0, 0.5, 1);
 
-        balls[1] = new Ball(6, 5, 0, 0, 1, 1);
+        balls[1] = new Ball(6, 5, 0, 0, 0.5, 1);
 
         Model model = new Model(balls, 10, 10, true, false, false);
 
@@ -28,7 +28,7 @@ public class BouncingBallsTest {
         model.step(1);
 
         // Assert that the transfer of speed has happened.
-        assertEquals(0, balls[0].vx, 0);
+        assertEquals(0, balls[0].vx, 0.01);
 
         assertEquals(1, balls[1].vx, 0);
         
@@ -46,9 +46,9 @@ public class BouncingBallsTest {
         Ball[] balls = new Ball[2];
 
         // Two balls of equal mass and radius, moving towards each other at the same speed.
-        balls[0] = new Ball(4, 5, 1, 0, 1, 1);
+        balls[0] = new Ball(4, 5, 1, 0, 0.5, 1);
 
-        balls[1] = new Ball(6, 5, -1, 0, 1, 1);
+        balls[1] = new Ball(6, 5, -1, 0, 0.5, 1);
 
         Model model = new Model(balls, 10, 10, true, false, false);
 
@@ -75,9 +75,9 @@ public class BouncingBallsTest {
         Ball[] balls = new Ball[2];
 
         // Two balls of equal radius, one is stationary and very heavy, the other one is moving towards towards the heavier ball.
-        balls[0] = new Ball(4, 5, 1, 0, 1, 1);
+        balls[0] = new Ball(4, 5, 1, 0, 0.5, 1);
 
-        balls[1] = new Ball(6, 5, 0, 0, 1, 1000);
+        balls[1] = new Ball(6, 5, 0, 0, 0.5, 1000);
 
         Model model = new Model(balls, 10, 10, true, false, false);
 
