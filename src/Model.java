@@ -17,11 +17,11 @@ public class Model {
 
 	private double areaWidth, areaHeight;
 	
-	private Boolean antiClipping, gravity;
+	private Boolean antiClipping, gravity, debugInfo;
 
 	public Ball [] balls;
 
-	public Model(Ball[] balls, double width, double height, boolean antiClipping, boolean gravity) {
+	public Model(Ball[] balls, double width, double height, boolean antiClipping, boolean gravity, boolean debugInfo) {
 
 		this.areaWidth = width;
 
@@ -32,6 +32,8 @@ public class Model {
 		this.antiClipping = antiClipping;
 
 		this.gravity = gravity;
+
+		this.debugInfo = debugInfo;
 
 	}
 
@@ -67,7 +69,20 @@ public class Model {
 
 			}
 
+			if (debugInfo) {
+				
+				printDebugInfo(b);
+
+			}
+
 		}
+
+	}
+
+	// Prints debug information about the ball.
+	private void printDebugInfo(Ball b) {
+
+		System.out.println("Ball: " + b.id + " x: " + b.x + " y: " + b.y + " vx: " + b.vx + " vy: " + b.vy);
 
 	}
 

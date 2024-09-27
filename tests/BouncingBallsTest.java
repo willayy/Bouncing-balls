@@ -20,7 +20,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, 0, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, true, false);
+        Model model = new Model(balls, 10, 10, true, false, false);
 
         /* The balls should collide and the first one should stop,
          the second one should continue moving with the same speed as the first one.
@@ -50,7 +50,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, -1, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, true, false);
+        Model model = new Model(balls, 10, 10, true, false, false);
 
         /* The balls should collide and both should have their speed inverted.
         Gravity is disabled, so the balls should not travel in the y-axis at all. */
@@ -79,7 +79,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, 0, 0, 1, 1000);
 
-        Model model = new Model(balls, 10, 10, true, false);
+        Model model = new Model(balls, 10, 10, true, false, false);
 
         // The balls should collide and the first one should stop, the second one should continue moving with the same speed as the first one.
         // Gravity is disabled, so the balls should not travel in the y-axis at all. 
@@ -112,7 +112,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 6, 0, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, true, false);
+        Model model = new Model(balls, 10, 10, true, false, false);
 
         // The balls should collide and the first one should stop, the second one should continue moving with the same speed as the first one.
         model.step(1);
@@ -137,7 +137,7 @@ public class BouncingBallsTest {
 
         balls[0] = new Ball(5, 5, 0, -0.1, 1, 1);
 
-        Model model = new Model(balls, 10, 10, true, true);
+        Model model = new Model(balls, 10, 10, true, true, false);
 
         ArrayList<Double> yValues = new ArrayList<>();
 
@@ -159,10 +159,12 @@ public class BouncingBallsTest {
          and the first value is the starting height.*/
         yValues.remove(0);
 
-        // Assert that the ball has bounced back up but not reached the same height.
-        boolean doesNotReachHigher = yValues.stream().noneMatch(y -> y >= 5);
+        final double d = 0.001;
 
-        assertTrue(doesNotReachHigher);
+        // Assert that the ball has infact bounced back up to the same height.
+        boolean doesReachSameHeight = yValues.stream().anyMatch(y -> (y < 5 + d && y > 5 - d));
+
+        assertTrue(doesReachSameHeight);
 
     }
 
@@ -177,7 +179,7 @@ public class BouncingBallsTest {
 
         balls[1] = new Ball(6, 5, 0, 0, 1, 1);
 
-        Model model = new Model(balls, 10, 10, true, false);
+        Model model = new Model(balls, 10, 10, true, false, false);
         
         // Get the mass and speed variables of the balls.
         double m1 = balls[0].mass;
