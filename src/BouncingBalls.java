@@ -21,7 +21,7 @@ public final class BouncingBalls {
 
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                    frame.add(anim);
+                    frame.add(anim);    
 
                     frame.pack();
 

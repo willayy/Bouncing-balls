@@ -1,5 +1,7 @@
 package src;
 
+import java.text.DecimalFormat;
+
 /**
  * The physics model.
  * 
@@ -141,11 +143,16 @@ public class Model {
 			double distance = euclideanDistance(b.x, b.y, other.x, other.y);
 
 			// If the balls are colliding
+			
 			if (distance <= b.radius + other.radius + 0.001) {
 
+				System.out.println(distance);
 				// Calculate the angle between the two balls.
 				double angle = angleBetween(b, other);
 
+				System.out.println(
+					"angle between balls: " + angle
+				);
 				// The mass of the balls.
 				double m1 = b.mass;
 				double m2 = other.mass;
@@ -157,6 +164,13 @@ public class Model {
 				/* Rotate the vectors so they are parallel (x) and orthogonal (y) to the
 				axle of collision. This is equivalent to making the vectors (vx1, vy1) and (vx2, vy2)
 				out of the balls x and y velocities and rotating them clockwise using the rotation matrix. */
+
+				System.out.println(b.vx);
+				System.out.println(b.vy);
+				System.out.println(other.vx);
+				System.out.println(other.vy);
+				System.out.println("-----------------");
+
 				rotateVector(v1, angle);
 				rotateVector(v2, angle);
 				
@@ -164,14 +178,19 @@ public class Model {
 				computeVelocityTransfer(v1, v2, m1, m2);
 
 				// Rotate the vectors back to the original positions.
-				rotateVector(v1, -angle);
-				rotateVector(v2, -angle);
+				rotateVector(v1, angle);
+				rotateVector(v2, angle);
 				
 				// Assign new velocities to the balls.
 				b.vx = v1.x;
 				b.vy = v1.y;
 				other.vx = v2.x;
 				other.vy = v2.y;
+				System.out.println(b.vx);
+				System.out.println(b.vy);
+				System.out.println(other.vx);
+				System.out.println(other.vy);
+				System.out.println("-----------------");
 
 			}
 
@@ -195,11 +214,28 @@ public class Model {
 		/* Since relative velocity and total momentum is the same after the collision (because its fully elastic),
 		we can calculate the new velocities by using this formula we aquired from the system of equations
 		given by R and I */
-		v1.x = (ix + m2 * rx) / (m1 + m2);
-		v1.y = (iy + m2 * ry) / (m1 + m2);
+		System.out.println(v1.x);
+		System.out.println(v1.y);
+		System.out.println(v2.x);
+		System.out.println(v2.y);
 
-		v2.x = (ix - m1 * rx) / (m1 + m2);
-		v2.y = (iy - m1 * ry) / (m1 + m2);
+		double v1x = v1.x;
+		double v1y = v1.y;
+		double v2x = v2.x;
+		double v2y = v2.y;
+
+        v1.x = ((m1 - m2)/(m1 + m2))* v1x + (2 * m2 / (m1 + m2)) * v2x;
+        v1.y = ((m1 - m2)/(m1 + m2))* v1x + (2 * m2 / (m1 + m2)) * v2y;
+        v2.x = (2 * m1 / (m1 + m2)) * v1x - ((m1 - m2)/(m1 + m2)) * v2x;	
+        v2.y = (2 * m1 / (m1 + m2)) * v1y - ((m1 - m2)/(m1 + m2)) * v2y;
+
+
+		System.out.println("the velocitie after calc but before rotation");
+		System.out.println(v1.x);
+		System.out.println(v1.y);
+		System.out.println(v2.x);
+		System.out.println(v2.y);
+		System.out.println("-----------------");
 
 	}
 
