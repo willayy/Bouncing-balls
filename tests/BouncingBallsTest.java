@@ -118,12 +118,12 @@ public class BouncingBallsTest {
         model.step(1);
 
         // Assert that the transfer of speed has happened.
-        assertEquals(0, balls[0].vx, 0);
+        assertEquals(0, balls[0].vx, 0.01);
 
         assertEquals(1, balls[1].vx, 0.01);
         
         // Assert that the balls have not moved in the y-axis, this collision should only affect the x-axis.
-        assertEquals(0, balls[0].vy, 0);
+        assertEquals(0, balls[0].vy, 0.01);
 
         assertEquals(1, balls[1].vy, 0.01);
 

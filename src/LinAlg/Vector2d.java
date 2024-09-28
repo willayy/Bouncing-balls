@@ -1,4 +1,4 @@
-package src;
+package src.LinAlg;
 
 /*
  * 
@@ -7,18 +7,18 @@ package src;
  * This Vector2d class accepts double values which is why we cant use the awt.Vector2d class.
  * 
  */
-class Vector2d {
+public class Vector2d {
     
-    protected double x;
+    public double x;
 
-    protected double y;
+    public double y;
     
-    protected Vector2d(double x, double y) {
+    public Vector2d(double x, double y) {
         this.x = x;
         this.y = y;
     }
     
-    protected Vector2d(Vector2d p) {
+    public Vector2d(Vector2d p) {
         this.x = p.x;
         this.y = p.y;
     }

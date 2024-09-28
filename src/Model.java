@@ -1,4 +1,6 @@
 package src;
+import src.LinAlg.Vector2d;
+import src.LinAlg.LinAlg;
 
 /**
  * The physics model.
@@ -142,36 +144,48 @@ public class Model {
 
 			// If the balls are colliding
 			if (distance <= b.radius + other.radius + 0.001) {
-
-				// Calculate the angle between the two balls.
-				double angle = angleBetween(b, other);
-
-				// The mass of the balls.
-				double m1 = b.mass;
-				double m2 = other.mass;
-
-				// Our initial velocities in vector format.
-				Vector2d v1 = new Vector2d(b.vx, b.vy);
-				Vector2d v2 = new Vector2d(other.vx, other.vy);
 				
-				/* Rotate the vectors so they are parallel (x) and orthogonal (y) to the
-				axle of collision. This is equivalent to making the vectors (vx1, vy1) and (vx2, vy2)
-				out of the balls x and y velocities and rotating them clockwise using the rotation matrix. */
-				rotateVector(v1, angle);
-				rotateVector(v2, angle);
-				
-				// Calculate the new velocities of the balls after the collision.
-				computeVelocityTransfer(v1, v2, m1, m2);
+				// Ball b
 
-				// Rotate the vectors back to the original positions.
-				rotateVector(v1, -angle);
-				rotateVector(v2, -angle);
-				
+				Vector2d bV = new Vector2d(b.vx, b.vy);
+
+				double m1 = 2 * other.mass / (b.mass + other.mass);
+
+				Vector2d n1 = new Vector2d(b.x - other.x, b.y - other.y);
+
+				Vector2d dv1 = new Vector2d(b.vx - other.vx, b.vy - other.vy);
+
+				double dot1 = LinAlg.vDot(n1, dv1);
+
+				double nMag1 = LinAlg.vMag(n1);
+
+				Vector2d bVafter = LinAlg.vSub(bV, LinAlg.vMul(n1 ,m1 * dot1 / (nMag1 * nMag1)));
+
+				// Ball other
+
+				Vector2d oV = new Vector2d(other.vx, other.vy);
+
+				double m2 = 2 * b.mass / (b.mass + other.mass);
+
+				Vector2d n2 = new Vector2d(other.x - b.x, other.y - b.y);
+
+				Vector2d dv2 = new Vector2d(other.vx - b.vx, other.vy - b.vy);
+
+				double dot2 = LinAlg.vDot(n2, dv2);
+
+				double nMag2 = LinAlg.vMag(n2);
+
+				Vector2d oVafter = LinAlg.vSub(oV, LinAlg.vMul(n2 ,m2 * dot2 / (nMag2 * nMag2)));
+
 				// Assign new velocities to the balls.
-				b.vx = v1.x;
-				b.vy = v1.y;
-				other.vx = v2.x;
-				other.vy = v2.y;
+
+				b.vx = bVafter.x;
+
+				b.vy = bVafter.y;
+
+				other.vx = oVafter.x;
+
+				other.vy = oVafter.y;
 
 			}
 
@@ -179,43 +193,6 @@ public class Model {
 
 	}
 
-	// Computes the velocity transfer between two balls after a collision with velocity v1 and v2 (vectors) and mass m1 and m2.
-	private void computeVelocityTransfer(Vector2d v1, Vector2d v2, double m1, double m2) {
-
-		/*Total momentum before the collision. These could just be baked in to the calculation below,
-		but this improves readability. */
-		double ix = m1 * v1.x + m2 * v2.x;
-		double iy = m1 * v1.y + m2 * v2.y;
-
-		/* Relative velocity before the collision. These could just be baked in to the calculation below,
-		but this improves readability. */
-		double rx = v2.x - v1.x;
-		double ry = v2.y - v1.y;
-		
-		/* Since relative velocity and total momentum is the same after the collision (because its fully elastic),
-		we can calculate the new velocities by using this formula we aquired from the system of equations
-		given by R and I */
-		v1.x = (ix + m2 * rx) / (m1 + m2);
-		v1.y = (iy + m2 * ry) / (m1 + m2);
-
-		v2.x = (ix - m1 * rx) / (m1 + m2);
-		v2.y = (iy - m1 * ry) / (m1 + m2);
-
-	}
-
-	// Rotates a vector by a given angle in radians. This is equivalent to multiplying the vector with a rotation matrix.
-	private void rotateVector(Vector2d v, double angle) {
-
-		double x = v.x;
-
-		double y = v.y;
-
-		v.x = x * Math.cos(angle) + y * Math.sin(angle);
-
-		v.y = - x * Math.sin(angle) + y * Math.cos(angle);
-
-	}
-	
 	// Calculates the angle between two balls. The angle is a radian between -pi and pi
 	private double angleBetween(Ball b, Ball other) {
 
