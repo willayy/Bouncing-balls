@@ -20,8 +20,7 @@ public class Ball {
     /**
      * Position, speed, radius and mass of the ball. You may wish to add other attributes.
      */
-     public double x, y, vx, vy, radius, mass;
-
-     public int id;
+    public double x, y, vx, vy, radius, mass;
+    public int id;
 
 }
