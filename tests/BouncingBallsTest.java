@@ -149,7 +149,7 @@ public class BouncingBallsTest {
         // Let the model run until the ball bounces back up to the height of 5.
         for (int i = 0; balls[0].y < 5; i++) {
 
-            model.step(0.1);
+            model.step(1/60);
 
             if (i > 1000000) {
                 // If the ball has not bounced back up to the height of 5 after 1000000 steps, the test fails.
@@ -206,9 +206,9 @@ public class BouncingBallsTest {
         double kineticEnergyBefore = kineticEnergy(balls[0]) + kineticEnergy(balls[1]);
 
         // Let the model run for a while.
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 1000000; i++) {
 
-            model.step(1);
+            model.step(1/60);
 
         }
 
