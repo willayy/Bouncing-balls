@@ -1,4 +1,4 @@
-package src.LinAlg;
+package src.linalg;
 
 /*
  * 
@@ -21,6 +21,17 @@ public class Vector2d {
     public Vector2d(Vector2d p) {
         this.x = p.x;
         this.y = p.y;
+    }
+
+    // Normalize the vector.
+    public void normalize() {
+        
+        double mag = LinAlg.vMag(this);
+        
+        x /= mag;
+        
+        y /= mag;
+        
     }
     
     @Override

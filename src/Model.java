@@ -1,6 +1,6 @@
 package src;
-import src.LinAlg.Vector2d;
-import src.LinAlg.LinAlg;
+import src.linalg.LinAlg;
+import src.linalg.Vector2d;
 
 /**
  * The physics model.
@@ -145,51 +145,91 @@ public class Model {
 			// If the balls are colliding
 			if (distance <= b.radius + other.radius + 0.001) {
 				
-				// Ball b
+				/*
+				* Our calculation of the transfer of velocity between two balls with (possibly)
+				* different masses in 2d space is built on the formula for calulating the transfer of velocity
+				* in 1d space which itself is derived from the conservation of momentum and kinetic energy.
+				* 
+				* The difference when you do it in 2d is simply that you find the velocity in the direction of the
+				* normal vector (the vector between the center of the  two balls) and then just use the same formula
+				* as in 1d space. The velocity in the direction of the tangent does not change since the balls dont exert
+				* any force in that direction. 
+				* 
+				* We chose a linear algebra approach since it was more intative to us, linear algebra is also a very powerful
+				* tool for solving problems in physics and computer science since the computer can work with vectors
+				* very efficinetly (however this is a bit trivial in this assignment since we arent using hardware acceleration anyways).
+				* Its worth noting that you can solve this problem using equivalently using trigonometry.
+				*
+				* We also want to say that we know this caluclation can be made much shorter and much more "single expression-y" but
+				* we chose to make it more verbose to make it easier to understand and imrpove readability. Since this task
+				* is about understanding how to model physics rather than maximizing performance we think this is a good tradeoff.
+				*/
 
-				Vector2d bV = new Vector2d(b.vx, b.vy);
+				// Velocity (before the collision) of the two balls as vectors.
+				Vector2d u1 = new Vector2d(b.vx, b.vy);
+				Vector2d u2 = new Vector2d(other.vx, other.vy);
 
-				double m1 = 2 * other.mass / (b.mass + other.mass);
+				// Mass of the two balls.
+				double m1 = b.mass;
+				double m2 = other.mass;
 
-				Vector2d n1 = new Vector2d(b.x - other.x, b.y - other.y);
+				// Find the normal vector (the vector between the two balls).
+				Vector2d n = new Vector2d(other.x - b.x, other.y - b.y);
 
-				Vector2d dv1 = new Vector2d(b.vx - other.vx, b.vy - other.vy);
+				// Normalize the normal vector to the normal unit vector.
+				n.normalize();
 
-				double dot1 = LinAlg.vDot(n1, dv1);
+				// Find the tangent vector, this is easily done by rotating the normal vector 90 degrees.
+				Vector2d t = new Vector2d(-n.y, n.x);
 
-				double nMag1 = LinAlg.vMag(n1);
+				// Find the scalar velocity in the normal direction.
+				double u1n = LinAlg.vDot(u1, n);
+				double u2n = LinAlg.vDot(u2, n);
 
-				Vector2d bVafter = LinAlg.vSub(bV, LinAlg.vMul(n1 ,m1 * dot1 / (nMag1 * nMag1)));
+				// Find the scalar velocity in the tangent direction.
+				double u1t = LinAlg.vDot(u1, t);
+				double u2t = LinAlg.vDot(u2, t);
 
-				// Ball other
+				// The scalar velocity in the tangent direction does not change.
+				double v1t = u1t;
+				double v2t = u2t;
 
-				Vector2d oV = new Vector2d(other.vx, other.vy);
+				/* Find the scalar velocity in the normal direction after the
+				collision using the formula for velocity transfer in 1d space. */
+				
+				double v1n = velocityAfterCollision(u1n, u2n, m1, m2);
+				double v2n = velocityAfterCollision(u2n, u1n, m2, m1);
 
-				double m2 = 2 * b.mass / (b.mass + other.mass);
+				/* Now that we have our scalar velocities we can use them to scale the 
+				* normal and tangent vectors to get the final velocity vectors. In the 
+				* normal and tangent directions */
 
-				Vector2d n2 = new Vector2d(other.x - b.x, other.y - b.y);
+				Vector2d v1nVector = LinAlg.vMul(n, v1n);
+				Vector2d v1tVector = LinAlg.vMul(t, v1t);
+				Vector2d v2nVector = LinAlg.vMul(n, v2n);
+				Vector2d v2tVector = LinAlg.vMul(t, v2t);
 
-				Vector2d dv2 = new Vector2d(other.vx - b.vx, other.vy - b.vy);
+				// Now add the normal and tangent vectors to get a single total velocity vector for each ball.
+				Vector2d v1 = LinAlg.vAdd(v1nVector, v1tVector);
+				Vector2d v2 = LinAlg.vAdd(v2nVector, v2tVector);
 
-				double dot2 = LinAlg.vDot(n2, dv2);
-
-				double nMag2 = LinAlg.vMag(n2);
-
-				Vector2d oVafter = LinAlg.vSub(oV, LinAlg.vMul(n2 ,m2 * dot2 / (nMag2 * nMag2)));
-
-				// Assign new velocities to the balls.
-
-				b.vx = bVafter.x;
-
-				b.vy = bVafter.y;
-
-				other.vx = oVafter.x;
-
-				other.vy = oVafter.y;
-
+				// Set the new velocities of the balls.
+				b.vx = v1.x;
+				b.vy = v1.y;
+				other.vx = v2.x;
+				other.vy = v2.y;
+				
 			}
 
 		}
+
+	}
+
+
+	// Calculates the velocity of a ball after a collision with another ball in 1d space.
+	private double velocityAfterCollision(double u1, double u2, double m1, double m2) {
+
+		return (u1 * (m1 - m2) + 2 * m2 * u2) / (m1 + m2);
 
 	}
 

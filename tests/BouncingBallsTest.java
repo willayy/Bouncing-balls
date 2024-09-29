@@ -146,7 +146,6 @@ public class BouncingBallsTest {
         final double deltaT = 0.1;
 
         // Let the model run for a while and store height values.
-
         for (int i = 0; i < iterations; i++) {
 
             yValues.add(balls[0].y);
@@ -174,30 +173,62 @@ public class BouncingBallsTest {
 
         Ball[] balls = new Ball[2];
 
-        // Two balls of equal mass and radius, moving towards each other at the same speed.
-        balls[0] = new Ball(4, 5, 1, 0, 1, 1);
+        // Two balls of equal mass and radius, one is stationary and the other one is moving towards it.
+        balls[0] = new Ball(4, 5, 1, 0, 0.5, 1);
 
-        balls[1] = new Ball(6, 5, 0, 0, 1, 1);
+        balls[1] = new Ball(6, 5, 0, 0, 0.5, 1);
 
         Model model = new Model(balls, 10, 10, true, false, false);
-        
-        // Get the mass and speed variables of the balls.
-        double m1 = balls[0].mass;
-        double m2 = balls[1].mass;
-        double v1x = balls[0].vx;
-        double v2x = balls[1].vx;
 
         // Calculate the kinetic energy of the system before and after the collision.
-        double kineticEnergyBefore = 0.5 * m1 * Math.pow(v1x, 2) + 0.5 * m2 * Math.pow(v2x, 2);
+        double kineticEnergyBefore = kineticEnergy(balls[0]) + kineticEnergy(balls[1]);
 
         // The collision happening when model is stepped.
         model.step(1);
 
-        double kineticEnergyAfter = 0.5 * m1 * Math.pow(v1x, 2) + 0.5 * m2 * Math.pow(v2x, 2);
+        double kineticEnergyAfter = kineticEnergy(balls[0]) + kineticEnergy(balls[1]);
 
         // Assert that the kinetic energy is conserved.
         assertEquals(kineticEnergyBefore, kineticEnergyAfter, 0.01);
 
     }
+
+    @Test
+    // Test if kinetic energy is conserved when the ball clips another ball and antiBallClipping is used.
+    public void testKineticEnergyConservationWithBallClipping() {
+
+        Ball[] balls = new Ball[2];
+
+        // Two balls of equal mass and radius, one is stationary and the other one is moving towards it.
+        balls[0] = new Ball(4, 5, 0.25, 0, 0.25, 1);
+
+        balls[1] = new Ball(5.1, 5, 0, 0, 0.25, 1);
+
+        Model model = new Model(balls, 10, 10, true, false, false);
+
+        // Calculate the kinetic energy of the system before and after the collision.
+        double kineticEnergyBefore = kineticEnergy(balls[0]) + kineticEnergy(balls[1]);
+
+        // The collision happening when model is stepped 3 times.
+        for (int i = 0; i < 3; i++) {
+
+            model.step(1);
+
+        }
+
+        // Calculate the kinetic energy of the system after the collision.
+        double kineticEnergyAfter = kineticEnergy(balls[0]) + kineticEnergy(balls[1]);
+
+        // Assert that the kinetic energy is conserved.
+        assertEquals(kineticEnergyBefore, kineticEnergyAfter, 0.01);
+
+    }
+
+    private double kineticEnergy(Ball b) {
+
+        return 0.5 * b.mass * (Math.pow(b.vx, 2) + Math.pow(b.vy, 2));
+
+    }
+
 
 }

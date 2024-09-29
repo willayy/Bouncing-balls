@@ -1,4 +1,4 @@
-package src.LinAlg;
+package src.linalg;
 
 // Linear algebra utility class.
 public class LinAlg {
@@ -34,6 +34,13 @@ public class LinAlg {
 	public static Vector2d vSub(Vector2d v1, Vector2d v2) {
 
 		return new Vector2d(v1.x - v2.x, v1.y - v2.y);
+
+	}
+
+	// Add two vectors together.
+	public static Vector2d vAdd(Vector2d v1, Vector2d v2) {
+
+		return new Vector2d(v1.x + v2.x, v1.y + v2.y);
 
 	}
 	
