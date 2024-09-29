@@ -2,7 +2,6 @@ package tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import java.util.ArrayList;
 import org.junit.Test;
 import src.Ball;
 import src.Model;
@@ -12,6 +11,9 @@ public class BouncingBallsTest {
     // Tolerance for the test.
     // This is mainly used to counteract the floating point arithmetic errors.
     private static final double d = 0.01;
+
+    // Delta t used for tests with multiple steps.
+    private static final double deltaT = 1/60;
 
     @Test
     // Test the lateral collision of a moving and a stationary ball with the same radius and mass.
@@ -149,7 +151,7 @@ public class BouncingBallsTest {
         // Let the model run until the ball bounces back up to the height of 5.
         for (int i = 0; balls[0].y < 5; i++) {
 
-            model.step(1/60);
+            model.step(deltaT);
 
             if (i > 1000000) {
                 // If the ball has not bounced back up to the height of 5 after 1000000 steps, the test fails.
@@ -208,7 +210,7 @@ public class BouncingBallsTest {
         // Let the model run for a while.
         for (int i = 0; i < 1000000; i++) {
 
-            model.step(1/60);
+            model.step(deltaT);
 
         }
 
