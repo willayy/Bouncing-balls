@@ -8,6 +8,17 @@ public class LinAlg {
         
     }
 
+	// This method calculates the euclidean distance between two Vector2ds.
+	public static double euclideanDistance(double x1, double y1, double x2, double y2) {
+
+		double dx = x1 - x2;
+
+		double dy = y1 - y2;
+
+		// Calculate the distance between two Vector2ds using the pythagorean theorem.
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+	}
+
 
 	// the dot product of two vectors.
     public static double vDot(Vector2d v1, Vector2d v2) {
