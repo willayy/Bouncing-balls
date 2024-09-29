@@ -99,7 +99,10 @@ public class Model {
 			double distance = LinAlg.euclideanDistance(b.x, b.y, other.x, other.y);
 
 			// If the balls are colliding
-			if (distance <= b.radius + other.radius + 0.001) {
+			if (distance <= b.radius + other.radius) {
+
+				// Since the balls practically never collide perfectly we move the ball initializing the collision back.
+				correctBallOverlap(b, other);
 				
 				/*
 				* Our calculation of the transfer of velocity between two balls with (possibly)
@@ -174,16 +177,30 @@ public class Model {
 				b.vy = v1.y;
 				other.vx = v2.x;
 				other.vy = v2.y;
-				
-			}
 
-			/* Since the balls are very unlikely to make a perfect collision we move
-			the ball back to the old position to avoid them clipping. */
-			b.x += oldX - b.x;
-			b.y += oldY - b.y;
+			}
 
 		}
 
+	}
+
+	// Corrects the overlap between two balls by moving b back to a position where the balls are not overlapping.
+	private void correctBallOverlap(Ball b, Ball other) {
+
+		// The distance between the two balls.
+		double distance = LinAlg.euclideanDistance(b.x, b.y, other.x, other.y);
+
+		// the angle between the two balls.
+		double angle = Math.atan2(other.y - b.y, other.x - b.x);
+
+		// The overlap between the two balls.
+		double overlap = (b.radius + other.radius) - distance;
+
+		// The x component of the overlap.
+		b.x -= overlap * Math.cos(angle);
+
+		// The y component of the overlap.
+		b.y -= overlap * Math.sin(angle);
 	}
 
 	// Calculates the velocity of a ball after a collision with another ball in 1d space.
@@ -221,7 +238,7 @@ public class Model {
 		if (b.x <= b.radius || b.x >= areaWidth - b.radius) {
 
 			/* Always move the ball back to the old position incase it is outside the area. 
-			* Since the probability of clipping is high its more efficient to always move the ball back */
+			Since the probability of clipping is high its more efficient to always move the ball back. */
 			b.x = oldX;
 
 			b.vx *= -1; // change direction of ball if the ball hits the left or right wall.
@@ -231,7 +248,7 @@ public class Model {
 		if (b.y <= b.radius || b.y >= areaHeight - b.radius) {
 
 			/* Always move the ball back to the old position incase it is outside the area. 
-			* Since the probability of clipping is high its more efficient to always move the ball back */
+			Since the probability of clipping is high its more efficient to always move the ball back */
 			b.y = oldY;
 
 			b.vy *= -1; // change direction of ball if the ball hits the upper or lower wall.

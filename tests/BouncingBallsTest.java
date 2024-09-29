@@ -192,7 +192,7 @@ public class BouncingBallsTest {
     }
 
     @Test
-    // Test if kinetic energy is conserved when the ball clips another ball and antiBallClipping is used.
+    // Test if kinetic energy is conserved in a long simulation with two balls.
     public void testKineticEnergyConservationAdvanced() {
 
         Ball[] balls = new Ball[2];
@@ -222,10 +222,48 @@ public class BouncingBallsTest {
 
     }
 
+    @Test
+    // Test if momentum is conserved in a long simulation with two balls.
+    public void testMomentumConservationAdvanced() {
+
+        Ball[] balls = new Ball[2];
+
+        // Two balls in the model
+        balls[0] = new Ball(4, 5, 1, -1, 0.15, 1);
+
+        balls[1] = new Ball(5.1, 5, 1, 1, 0.30, 8);
+
+        Model model = new Model(balls, 10, 10, false, false);
+
+        // Calculate the momentum of the system at the start of the simulatioin.
+        double momentumBefore = momentum(balls[0]) + momentum(balls[1]);
+
+        // Let the model run for a while.
+        for (int i = 0; i < 1000000; i++) {
+
+            model.step(deltaT);
+
+        }
+
+        // Calculate the momentum of the system after running the simulation.
+        double momentumAfter = momentum(balls[0]) + momentum(balls[1]);
+
+        // Assert that the momentum is conserved.
+        assertEquals(momentumBefore, momentumAfter, d);
+
+    }
+
     // Helper method to calculate the kinetic energy of a ball.
     private double kineticEnergy(Ball b) {
 
         return 0.5 * b.mass * (Math.pow(b.vx, 2) + Math.pow(b.vy, 2));
+
+    }
+
+    // Helper method to calculate the momentum of a ball.
+    private double momentum(Ball b) {
+
+        return b.mass * Math.sqrt(Math.pow(b.vx, 2) + Math.pow(b.vy, 2));
 
     }
 
