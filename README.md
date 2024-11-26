@@ -1,2 +1,2 @@
 # Bouncing-balls
-Bouncing balls problem in the Chalmers mathematical modeling course.
+Mathematically model several bouncing balls in a room with collisions being perfectly elastic.
